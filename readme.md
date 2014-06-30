@@ -15,6 +15,9 @@ There are a few environment variables to allow you to customize the stack:
 * `TAG`: The tag to use for the Shipyard instance (default: latest)
 * `DB_HOST_VOLUME`: (optional) Specify a host directory to map the Shipyard DB volume
 * `DEBUG`: (optional) Enable debug in Shipyard (default: false)
+* `SHIPYARD_PORT`: Host Port to use for Shipyard web front-end (default: 8000)
+* `LB_PORT`: Local Host Port to use for Shipyard load balancer (default: 80)
+
 
 ## Setup Shipyard Stack
 `docker run -i -t -v /var/run/docker.sock:/docker.sock shipyard/deploy setup`
