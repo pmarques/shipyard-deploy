@@ -46,7 +46,7 @@ This may take a moment while the Shipyard images are pulled..."
     redis=$(docker -H unix:///docker.sock run -i -t -d -p 6379:6379 --name shipyard_redis shipyard/redis)
     sleep 2
     echo "Starting App Router..."
-    router=$(docker -H unix:///docker.sock run -i -t -d -p 80 --link shipyard_redis:redis --name shipyard_router shipyard/router)
+    router=$(docker -H unix:///docker.sock run -i -t -d --link shipyard_redis:redis --name shipyard_router shipyard/router)
     sleep 2
     echo "Starting Load Balancer..."
     lb=$(docker -H unix:///docker.sock run -i -t -d -p 80:80 --link shipyard_redis:redis --link shipyard_router:app_router --name shipyard_lb shipyard/lb)
@@ -56,7 +56,7 @@ This may take a moment while the Shipyard images are pulled..."
     if [ ! -z "$DB_HOST_VOLUME" ] ; then
         EXTRA_DB_ARGS="-v $DB_HOST_VOLUME:/var/lib/postgresql"
     fi
-    db=$(docker -H unix:///docker.sock run -i -t -d -p 5432 -e DB_NAME=shipyard -e DB_USER=shipyard -e DB_PASS=$DB_PASS $EXTRA_DB_ARGS --name shipyard_db shipyard/db)
+    db=$(docker -H unix:///docker.sock run -i -t -d -e DB_NAME=shipyard -e DB_USER=shipyard -e DB_PASS=$DB_PASS $EXTRA_DB_ARGS --name shipyard_db shipyard/db)
     sleep 5
     echo "Starting Shipyard"
     shipyard=$(docker -H unix:///docker.sock run -i -t -d -p 8000:8000 --link shipyard_db:db --link shipyard_redis:redis --name shipyard -e ADMIN_PASS=$ADMIN_PASS -e DEBUG=$DEBUG --entrypoint /app/.docker/run.sh shipyard/shipyard:$TAG app master-worker)
