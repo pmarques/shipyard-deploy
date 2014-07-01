@@ -4,6 +4,7 @@ DB_HOST_VOLUME=${DB_HOST_VOLUME:-}
 ADMIN_PASS=${ADMIN_PASS:-shipyard}
 LB_PORT=${LB_PORT:-80}
 SHIPYARD_PORT=${SHIPYARD_PORT:-8000}
+HOST_BIND=${HOST_BIND:-0.0.0.0}
 TAG=${TAG:-latest}
 DEBUG=${DEBUG:-False}
 ACTION=${1:-}
@@ -51,7 +52,7 @@ This may take a moment while the Shipyard images are pulled..."
     router=$(docker -H unix:///docker.sock run -i -t -d -p 80 --link shipyard_redis:redis --name shipyard_router shipyard/router)
     sleep 2
     echo "Starting Load Balancer..."
-    lb=$(docker -H unix:///docker.sock run -i -t -d -p $LB_PORT:80 --link shipyard_redis:redis --link shipyard_router:app_router --name shipyard_lb shipyard/lb)
+    lb=$(docker -H unix:///docker.sock run -i -t -d -p $HOST_BIND:$LB_PORT:80 --link shipyard_redis:redis --link shipyard_router:app_router --name shipyard_lb shipyard/lb)
     sleep 2
     echo "Starting DB..."
     EXTRA_DB_ARGS=""
@@ -61,7 +62,7 @@ This may take a moment while the Shipyard images are pulled..."
     db=$(docker -H unix:///docker.sock run -i -t -d -p 5432 -e DB_NAME=shipyard -e DB_USER=shipyard -e DB_PASS=$DB_PASS $EXTRA_DB_ARGS --name shipyard_db shipyard/db)
     sleep 5
     echo "Starting Shipyard"
-    shipyard=$(docker -H unix:///docker.sock run -i -t -d -p $SHIPYARD_PORT:8000 --link shipyard_db:db --link shipyard_redis:redis --name shipyard -e ADMIN_PASS=$ADMIN_PASS -e DEBUG=$DEBUG --entrypoint /app/.docker/run.sh shipyard/shipyard:$TAG app master-worker)
+    shipyard=$(docker -H unix:///docker.sock run -i -t -d -p $HOST_BIND:$SHIPYARD_PORT:8000 --link shipyard_db:db --link shipyard_redis:redis --name shipyard -e ADMIN_PASS=$ADMIN_PASS -e DEBUG=$DEBUG --entrypoint /app/.docker/run.sh shipyard/shipyard:$TAG app master-worker)
     echo "
 Shipyard Stack Deployed
 

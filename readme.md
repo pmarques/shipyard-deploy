@@ -17,6 +17,7 @@ There are a few environment variables to allow you to customize the stack:
 * `DEBUG`: (optional) Enable debug in Shipyard (default: false)
 * `SHIPYARD_PORT`: Host Port to use for Shipyard web front-end (default: 8000)
 * `LB_PORT`: Local Host Port to use for Shipyard load balancer (default: 80)
+* `$HOST_BIND`: Local Host Addr to use for Shipyard containers published ports (default: 0.0.0.0)
 
 
 ## Setup Shipyard Stack
